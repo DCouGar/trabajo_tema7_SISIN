@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejemplo Web - Horario</title>
+    <link rel="stylesheet" href="frontend/css/app.css">
+</head>
+
+<body>
+
+    <h1>Práctica SISIN - Tema 7</h1>
+    
+    <div id="contenedor-tabla"></div> <!-- Contenedor para la tabla -->
+
+    <script>
+        const urlObtenerHorario = 'http://192.168.49.49/backend/conexionBBDD.php';
+
+        // Llamar a la función obtenerHorario para cargar la lista de Módulos Profesionales al cargar la página web
+        obtenerHorario();
+
+        // Función asíncrona para obtener la lista de empleados
+        async function obtenerHorario() {
+            try {
+                // Obtener la lista de empleados del backend
+                const horario = await fetch(urlObtenerHorario)
+                    .then(respuesta => respuesta.json());
+
+                // Llamar a la función para crear la tabla con los datos obtenidos
+                crearTabla(horario);
+                
+            } catch (error) {
+                console.log("Error al obtener el horario:", error);
+            }
+        }
+
+        function crearTabla(datos) {
+            const tabla = document.createElement('table');
+            const tbody = document.createElement('tbody');
+
+            // Obtener las claves del primer objeto para los encabezados
+            if (datos.length > 0) {
+                const encabezados = Object.keys(datos[0]);
+                const filaEncabezado = document.createElement('tr');
+
+                encabezados.forEach(encabezado => {
+                    const celdaEncabezado = document.createElement('th');
+                    celdaEncabezado.textContent = encabezado;
+                    filaEncabezado.appendChild(celdaEncabezado);
+                });
+
+                tbody.appendChild(filaEncabezado);
+
+                // Crear las filas y celdas de la tabla con los datos
+                datos.forEach(filaDatos => {
+                    const fila = document.createElement('tr');
+                    encabezados.forEach(clave => {
+                        const celda = document.createElement('td');
+                        celda.textContent = filaDatos[clave];
+                        fila.appendChild(celda);
+                    });
+                    tbody.appendChild(fila);
+                });
+            } else {
+                const mensaje = document.createElement('p');
+                mensaje.textContent = "No hay datos disponibles.";
+                document.getElementById('contenedor-tabla').appendChild(mensaje);
+                return;
+            }
+
+            tabla.appendChild(tbody);
+            document.getElementById('contenedor-tabla').appendChild(tabla);
+        }
+    </script>
+
+</body>
+
+</html>
